@@ -1,9 +1,10 @@
 import sys
-import demucs
+import demucs.separate
+import shlex
 
 
 if __name__ == "__main__":
     # Read from stdin
-    input_text = sys.stdin.read().strip()
-    print(f"{input_text}")
+    input_file = sys.stdin.read().strip()
+    demucs.separate.main(['--mp3', '--two-stems', 'drums', '-v', '-o', '../output', input_file])
     sys.stdout.flush()

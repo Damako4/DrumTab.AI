@@ -1,57 +1,20 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import { join } from 'path'
-const path = require('path');
-import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-const { spawn } = require('child_process');
-const isDev = require('electron-is-dev')
+import { app, BrowserWindow } from 'electron'
+import { electronApp, optimizer } from '@electron-toolkit/utils'
+import { createWindow } from './window.js';
+import { setupUploadHandler } from './upload.js';
 
-import icon from '../../resources/icon.png?asset'
+// Prevent Vsync Error
+app.disableHardwareAcceleration(); 
 
-function createWindow() {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
-    show: false,
-    autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
-    webPreferences: {
-      contextIsolation: true,
-      enableRemoteModule: false,
-      nodeIntegration: false,
-      preload: join(__dirname, '../preload/index.js'),
-      sandbox: false
-    }
-  })
+// Setup Handlers
+setupUploadHandler()
 
-  mainWindow.on('ready-to-show', () => {
-    mainWindow.show()
-  })
-
-  mainWindow.webContents.setWindowOpenHandler((details) => {
-    shell.openExternal(details.url)
-    return { action: 'deny' }
-  })
-
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
-  if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
-  } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
-  }
-}
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
+// Start App
 app.whenReady().then(() => {
-  // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.damako.drumtab')
 
   // Default open or close DevTools by F12 in development
   // and ignore CommandOrControl + R in production.
-  // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)
   })
@@ -59,54 +22,13 @@ app.whenReady().then(() => {
   createWindow()
 
   app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quit when all windows are closed, except on macOS.
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
-})
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-console.log(isDev);
-
-const scriptPath = isDev
-  ? path.resolve(__dirname, '../../../backend/entry.py')
-  : path.resolve(process.resourcesPath, 'backend/entry.py')
-
-ipcMain.handle('upload-start', async (event, text) => {
-  return new Promise((resolve, reject) => {
-    const python = spawn('python3', [scriptPath, text]);
-
-    let output = ''
-    let error = ''
-
-    python.stdout.on('data', (data) => {
-      output += data.toString();
-    });
-
-    python.stderr.on('data', (data) => {
-      error += data.toString();
-    });
-
-    python.on('close', (code) => {
-      if (code === 0) {
-        resolve(output.trim());
-      } else {
-        reject(new Error(`Python exited with code ${code}: ${error}`));
-      }
-    });
-
-    python.stdin.write(text);
-    python.stdin.end();
-  })
 })
