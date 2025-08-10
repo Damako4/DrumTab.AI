@@ -1,4 +1,5 @@
 import React from 'react';
+import Button from '@mui/material/Button';
 
 function UploadButton() {
     const upload_file = async () => {
@@ -10,7 +11,7 @@ function UploadButton() {
         }
     }
 
-    return <a target="_blank" rel="noreferrer" onClick={upload_file}>Upload Audio File</a>
+    return <Button variant="contained" color="primary" onClick={upload_file}>Upload Audio File</Button>
 }
 
 export default UploadButton

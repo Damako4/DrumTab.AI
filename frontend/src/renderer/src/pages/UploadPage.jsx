@@ -1,29 +1,24 @@
 import Versions from '../components/Versions'
 import UploadButton from '../components/UploadButton'
-import { Card, Title } from '@mantine/core';
+import Card from '@mui/material/Card'
+import Box from '@mui/material/Box'
 
 function UploadPage() {
   return (
     <>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh'
-      }}>
-        <Card
-          shadow="md"
-          radius="md"
-          padding="xl"
-          withBorder
-          sx={(theme) => ({
-            backgroundColor: theme.colors.dark[7], // dark background
-            borderColor: theme.colors.dark[5],     // dark border
-          })}
-        >
+      <Box
+        sx={{
+          minHeight: 'calc(100vh - 64px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          p: 2
+        }}
+      >
+        <Card sx={{ p: 4, minWidth: 320 }}>
           <UploadButton />
         </Card>
-      </div>
+      </Box>
     </>
   )
 }

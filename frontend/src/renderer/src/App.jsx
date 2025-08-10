@@ -1,28 +1,36 @@
-import Versions from './components/Versions'
-import electronLogo from './assets/electron.svg'
-import logo from './assets/icon.svg'
-import UploadButton from './components/UploadButton'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined'
+import NewTranscription from './components/NewTranscription'
+import Divider from '@mui/material/Divider'
+import NewTranscriptionModal from './components/NewTranscriptionModal'
+import React, { useState } from 'react'
 
 function App() {
-  const ipcHandle = () => window.electron.ipcRenderer.invoke('upload-start',  ['Hello World']).then((result) => {
-
-  })
-
+  const [newFile, setNewFile] = useState(false);
   return (
     <>
-      <img alt="logo" className="logo" src={logo} />
-      <div className="text">
-        DrumTab<span className="react">.AI</span>
-      </div>
-      <p className="tip">
-        Created by Damir Fell
-      </p>
-      <div className="actions">
-        <div className="action">
-          <UploadButton />
-        </div>
-      </div>
-      <Versions></Versions>
+      <Divider flexItem variant='middle' sx={{ my: 2 }} >Transcriptions</Divider>
+      <Box sx={{ flexGrow: 1, width: '100%', p: 2, mt: -2}}>
+        <Grid container spacing={2} alignItems="flex-start" justifyContent="flex-start">
+          <NewTranscription onClick={() => {
+            console.log('New transcription clicked');
+            setNewFile(true);
+          }} />
+          {/* ...add more items later; grid will fill to the right... */}
+        </Grid>
+      </Box>
+      <NewTranscriptionModal
+        open={newFile}
+        onClose={() => setNewFile(false)}
+        onCreate={() => {
+          // Handle create action
+          setNewFile(false);
+        }}
+      />
     </>
   )
 }
