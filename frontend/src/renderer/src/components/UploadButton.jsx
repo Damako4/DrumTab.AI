@@ -1,5 +1,7 @@
 import React from 'react';
 import Button from '@mui/material/Button';
+import AudioFileIcon from '@mui/icons-material/AudioFile';
+
 
 function UploadButton() {
     const upload_file = async () => {
@@ -11,7 +13,7 @@ function UploadButton() {
         }
     }
 
-    return <Button variant="contained" color="primary" onClick={upload_file}>Upload Audio File</Button>
+    return <Button startIcon={<AudioFileIcon />} variant="contained" color="primary" onClick={upload_file}>Upload Audio File</Button>
 }
 
 export default UploadButton

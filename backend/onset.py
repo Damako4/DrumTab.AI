@@ -8,12 +8,12 @@ print(sr)
 
 
 n_fft = 512 
-hop_length = 128
+hop_length = 256
 
 onset_env = librosa.onset.onset_strength(y=x, sr=sr, hop_length=hop_length, n_fft=n_fft)
 onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr,
                                           hop_length=hop_length, backtrack=False,
-                                          delta=0.1, wait=10) 
+                                          delta=0.15, wait=4) 
 onset_times = librosa.frames_to_time(onset_frames, sr=sr, hop_length=hop_length)
 
 plt.figure(figsize=(20, 4))
